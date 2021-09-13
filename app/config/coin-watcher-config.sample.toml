@@ -1,0 +1,23 @@
+# This is a TOML document.
+
+[bot]
+
+[bot.1]
+token = "yourtoken"
+hookPath = "/yourpath"
+
+[mysql]
+dsn = "youruser:yourpassword@tcp(192.168.1.1:3306)/your_db?charset=utf8mb4&parseTime=True"
+
+[redis]
+addr = "192.168.1.1:6379"
+password = "yourpassword"
+
+[server]
+serveAddr = ":8080"
+tgWebHookHost = "https://your.domain:8080"
+basePath = "/yourpath"  # or ""
+tgWebHookPath = "/yourpath"
+enableSSL = true
+certFile = "./certs/server.pem"
+keyFile = "./certs/server.key"

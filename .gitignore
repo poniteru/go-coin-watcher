@@ -11,3 +11,5 @@ Documents
 *.sw?
 main
 main.exe
+/app/certs
+/app/config/coin-watcher-config.toml
