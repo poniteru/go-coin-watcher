@@ -57,7 +57,10 @@ func handleMessage(update *tgbotapi.Update, botBean *telegram.BotBean) {
 			return
 		}
 		cmdStr := strings.Fields(update.Message.Text)[0]
-		botBean.BotMsgHandler.GetMsgHandler(cmdStr)(update, botBean)
+		handler := botBean.BotMsgHandler.GetMsgHandler(cmdStr)
+		if handler != nil {
+			handler(update, botBean)
+		}
 	}
 
 }

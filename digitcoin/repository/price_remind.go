@@ -41,6 +41,14 @@ func SetReminder(currencyPair string, direction market.Direction, price string, 
 	return err
 }
 
+func GetRemindersByRange(currencyPair string, direction market.Direction, start, stop int64) ([]redis.Z, error) {
+	val, err := cache.Rdb.ZRangeWithScores(context.Background(), GetMarketRemindersKey(currencyPair, direction), start, stop).Result()
+	if err != nil {
+		return nil, err
+	}
+	return val, err
+}
+
 func GetReminders(currencyPair string, price string) ([]redis.Z, []redis.Z, error) {
 	valUp, err := GetUpReminders(currencyPair, price)
 	if err != nil {

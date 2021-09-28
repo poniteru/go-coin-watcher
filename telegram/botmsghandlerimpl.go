@@ -19,6 +19,7 @@ func NewBotMsgHandlerImpl() *BotMsgHandler {
 	botEventMap["/ping"] = OnPing
 	botEventMap["/invitecode"] = OnInviteCodeInput
 	botEventMap["/setreminder"] = OnSetReminder
+	botEventMap["/listreminder"] = OnListReminder
 	return NewBotMsgHandler(botEventMap)
 }
 
@@ -90,4 +91,45 @@ func OnSetReminder(update *tgbotapi.Update, botBean *BotBean) {
 	}
 	text := fmt.Sprintf("设置成功")
 	botBean.SendMsg(update.Message.Chat.ID, text)
+}
+
+func OnListReminder(update *tgbotapi.Update, botBean *BotBean) {
+	// 检查用户是否存在
+	exists, err := dao.SelectUserExists(update.Message.Chat.ID)
+	if err != nil || exists != 1 {
+		botBean.SendMsg(update.Message.Chat.ID, "操作失败")
+		return
+	}
+	// 检查命令参数是否正确
+	// /listreminder eth up
+	cmds := strings.Fields(update.Message.Text)
+	if len(cmds) < 3 {
+		botBean.SendMsg(update.Message.Chat.ID, "操作失败")
+		return
+	}
+	coinPair := digicoinutil.ToDefaultCurrencyPair(cmds[1])
+	if _, ok := digiconst.CurrencyPairMap[coinPair]; !ok {
+		botBean.SendMsg(update.Message.Chat.ID, "操作失败")
+		return
+	}
+	direction := market2.GetDirection(cmds[2])
+	if direction == market2.UNDEFINED {
+		botBean.SendMsg(update.Message.Chat.ID, "操作失败")
+		return
+	}
+	reminders, err := service2.GetReminders(coinPair, direction, strconv.FormatInt(update.Message.Chat.ID, 10))
+	if err != nil {
+		botBean.SendMsg(update.Message.Chat.ID, "操作失败")
+		return
+	}
+	if reminders == nil {
+		botBean.SendMsg(update.Message.Chat.ID, "无")
+		return
+	}
+	var builder strings.Builder
+	for _, z := range reminders {
+		builder.WriteString(strconv.FormatFloat(z.Score, 'f', -1, 64) + "\n")
+	}
+	//str := builder.String()
+	botBean.SendMsg(update.Message.Chat.ID, builder.String())
 }
