@@ -38,3 +38,8 @@ func GetReminders(currencyPair string, direction market.Direction, member string
 	}
 	return result, err
 }
+
+func DelReminder(currencyPair string, direction market.Direction, price string, member string) (err error) {
+	err = repository.DelReminder(currencyPair, direction, price, member)
+	return err
+}

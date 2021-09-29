@@ -101,6 +101,11 @@ func DelReminders(currencyPair string, price string) error {
 	return err
 }
 
+func DelReminder(currencyPair string, direction market.Direction, price string, member string) (err error) {
+	_, err = cache.Rdb.ZRem(context.Background(), GetMarketRemindersKey(currencyPair, direction), member+"_"+price).Result()
+	return err
+}
+
 func DelUpReminders(currencyPair string, price string) (result int64, err error) {
 	result, err = cache.Rdb.ZRemRangeByScore(context.Background(), GetMarketRemindersKey(currencyPair, market.UP),
 		"0", price).Result()
